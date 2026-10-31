@@ -1,0 +1,13 @@
+{
+  "name": "cypher",
+  "private": true,
+  "description": "Outils de test uniquement : le site se déploie en copiant public/.",
+  "type": "module",
+  "scripts": {
+    "test": "node tests/e2e.mjs"
+  },
+  "devDependencies": {
+    "libsodium-wrappers-sumo": "0.8.4",
+    "playwright": "1.61.0"
+  }
+}
