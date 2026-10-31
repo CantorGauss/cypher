@@ -270,11 +270,11 @@ const tests = {
 
   async 'mauvais secret refusé'({ page }) {
     const plain = randomBytes(1000);
-    await expectRefused(page, format.encryptWithPassword(PASSWORD, plain), { password: 'mauvais mot de passe' }, /incorrect/);
+    await expectRefused(page, format.encryptWithPassword(PASSWORD, plain), { password: 'mauvais mot de passe' }, /Wrong password/);
     const key = sodium.crypto_secretstream_xchacha20poly1305_keygen();
     const other = sodium.to_base64(randomBytes(32), sodium.base64_variants.URLSAFE_NO_PADDING);
-    await expectRefused(page, format.encryptWithKey(key, plain), { key: other }, /incorrect/);
-    await expectRefused(page, format.encryptWithKey(key, plain), { key: 'abc' }, /Clé invalide/);
+    await expectRefused(page, format.encryptWithKey(key, plain), { key: other }, /Wrong password/);
+    await expectRefused(page, format.encryptWithKey(key, plain), { key: 'abc' }, /Invalid key/);
   },
 
   async 'altérations détectées, aucun clair exposé'({ page }) {
@@ -286,31 +286,31 @@ const tests = {
     const secret = { key: encoded };
     const flip = (offset) => { const copy = Buffer.from(cipher); copy[offset] ^= 1; return copy; };
 
-    await expectRefused(page, flip(40), secret, /incorrect|altéré/); // en-tête de flux
-    await expectRefused(page, flip(6), secret, /incorrect|altéré/); // octet réservé, couvert par l'AD
-    await expectRefused(page, flip(100), secret, /incorrect|altéré/); // premier bloc
-    await expectRefused(page, flip(56 + size + 100), secret, /altéré/); // bloc du milieu
-    await expectRefused(page, flip(cipher.length - 1), secret, /altéré/); // tag final
-    await expectRefused(page, cipher.subarray(0, 56 + 2 * size), secret, /incomplet/); // coupe entre deux blocs
-    await expectRefused(page, cipher.subarray(0, 56 + size + 500), secret, /altéré/); // coupe dans un bloc
-    await expectRefused(page, cipher.subarray(0, 56), secret, /incomplet/); // en-tête seul
-    await expectRefused(page, Buffer.concat([cipher, Buffer.from([0])]), secret, /altéré/); // données ajoutées
+    await expectRefused(page, flip(40), secret, /Wrong password|tampered/); // en-tête de flux
+    await expectRefused(page, flip(6), secret, /Wrong password|tampered/); // octet réservé, couvert par l'AD
+    await expectRefused(page, flip(100), secret, /Wrong password|tampered/); // premier bloc
+    await expectRefused(page, flip(56 + size + 100), secret, /tampered/); // bloc du milieu
+    await expectRefused(page, flip(cipher.length - 1), secret, /tampered/); // tag final
+    await expectRefused(page, cipher.subarray(0, 56 + 2 * size), secret, /Incomplete/); // coupe entre deux blocs
+    await expectRefused(page, cipher.subarray(0, 56 + size + 500), secret, /tampered/); // coupe dans un bloc
+    await expectRefused(page, cipher.subarray(0, 56), secret, /Incomplete/); // en-tête seul
+    await expectRefused(page, Buffer.concat([cipher, Buffer.from([0])]), secret, /tampered/); // données ajoutées
     await expectRefused(page, Buffer.concat([ // deux blocs inversés
       cipher.subarray(0, 56),
       cipher.subarray(56 + size, 56 + 2 * size),
       cipher.subarray(56, 56 + size),
       cipher.subarray(56 + 2 * size),
-    ]), secret, /incorrect|altéré/);
+    ]), secret, /Wrong password|tampered/);
   },
 
   async 'en-tête forgé : paramètres Argon2id hors bornes refusés sans calcul'({ page }) {
     const forged = format.header(1, 3, 0xffffffff, Buffer.alloc(16), Buffer.alloc(24));
     const started = Date.now();
-    await expectRefused(page, Buffer.concat([forged, Buffer.alloc(40)]), { password: PASSWORD }, /altéré/);
+    await expectRefused(page, Buffer.concat([forged, Buffer.alloc(40)]), { password: PASSWORD }, /tampered/);
     assert.ok(Date.now() - started < 5000);
     const version = format.header(2, 0, 0, Buffer.alloc(16), Buffer.alloc(24));
     version[4] = 9;
-    await expectRefused(page, Buffer.concat([version, Buffer.alloc(40)]), { key: 'a'.repeat(43) }, /plus récente/);
+    await expectRefused(page, Buffer.concat([version, Buffer.alloc(40)]), { key: 'a'.repeat(43) }, /newer version/);
   },
 
   async 'validation du formulaire'({ page }) {
@@ -318,10 +318,10 @@ const tests = {
     assert.equal(await page.isDisabled('input[name="action"][value="decrypt"]'), true);
     await page.fill('#password', 'court');
     await page.fill('#confirm', 'court');
-    assert.match((await submit(page)).error, /au moins 12/);
+    assert.match((await submit(page)).error, /at least 12/);
     await page.fill('#password', PASSWORD);
     await page.fill('#confirm', `${PASSWORD}x`);
-    assert.match((await submit(page)).error, /ne correspondent pas/);
+    assert.match((await submit(page)).error, /do not match/);
   },
 
   async 'fichiers temporaires effacés, y compris à la réouverture'({ page, context, base }) {

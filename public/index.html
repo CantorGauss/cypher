@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -15,20 +15,20 @@
   <main>
     <header>
       <h1>Cypher</h1>
-      <p>Chiffrez un fichier dans votre navigateur. Il ne quitte jamais votre appareil.</p>
+      <p>Encrypt a file in your browser. It never leaves your device.</p>
     </header>
 
     <!-- Visible par défaut : app.js le retire. Couvre le JavaScript désactivé et file://. -->
     <p id="boot-error" class="notice error">
-      Cette page ne peut pas démarrer. Elle doit être servie en HTTPS (ou sur localhost) avec JavaScript activé.
+      This page cannot start. It must be served over HTTPS (or from localhost) with JavaScript enabled.
     </p>
 
     <form id="form" hidden novalidate>
       <label id="dropzone" class="dropzone">
         <input id="file" type="file">
         <span id="dropzone-empty">
-          <strong>Choisissez un fichier</strong>
-          <span>ou déposez-le ici</span>
+          <strong>Choose a file</strong>
+          <span>or drop it here</span>
         </span>
         <span id="dropzone-file" hidden>
           <strong id="file-name"></strong>
@@ -39,46 +39,46 @@
       <div id="options" hidden>
         <fieldset class="segmented">
           <legend>Action</legend>
-          <label><input type="radio" name="action" value="encrypt" checked><span>Chiffrer</span></label>
-          <label><input type="radio" name="action" value="decrypt"><span>Déchiffrer</span></label>
+          <label><input type="radio" name="action" value="encrypt" checked><span>Encrypt</span></label>
+          <label><input type="radio" name="action" value="decrypt"><span>Decrypt</span></label>
         </fieldset>
 
         <fieldset id="method-field" class="segmented">
           <legend>Protection</legend>
-          <label><input type="radio" name="method" value="password" checked><span>Mot de passe</span></label>
-          <label><input type="radio" name="method" value="key"><span>Clé 256 bits</span></label>
+          <label><input type="radio" name="method" value="password" checked><span>Password</span></label>
+          <label><input type="radio" name="method" value="key"><span>256-bit key</span></label>
         </fieldset>
 
         <div id="password-fields">
           <div class="field">
             <div class="field-head">
-              <label for="password">Mot de passe</label>
-              <button id="toggle-password" class="link" type="button">Afficher</button>
+              <label for="password">Password</label>
+              <button id="toggle-password" class="link" type="button">Show</button>
             </div>
             <input id="password" type="password" autocomplete="off" spellcheck="false">
           </div>
           <div id="confirm-field" class="field">
-            <label for="confirm">Confirmation</label>
+            <label for="confirm">Confirm password</label>
             <input id="confirm" type="password" autocomplete="off" spellcheck="false">
           </div>
-          <p id="password-hint" class="hint">12 caractères minimum. Une phrase de plusieurs mots est plus solide et plus facile à retenir.</p>
+          <p id="password-hint" class="hint">At least 12 characters. A phrase of several words is stronger and easier to remember.</p>
         </div>
 
         <div id="key-fields" hidden>
           <div class="field">
             <div class="field-head">
-              <label for="key">Clé</label>
+              <label for="key">Key</label>
               <span id="key-actions">
-                <button id="generate-key" class="link" type="button">Générer</button>
-                <button id="copy-key" class="link" type="button">Copier</button>
+                <button id="generate-key" class="link" type="button">Generate</button>
+                <button id="copy-key" class="link" type="button">Copy</button>
               </span>
             </div>
             <input id="key" class="mono" type="text" autocomplete="off" autocapitalize="off" spellcheck="false">
           </div>
-          <p id="key-hint" class="hint">Copiez la clé dans un gestionnaire de mots de passe. Elle n'est enregistrée nulle part.</p>
+          <p id="key-hint" class="hint">Copy the key to a password manager. It is not saved anywhere.</p>
         </div>
 
-        <button id="submit" class="primary" type="submit">Chiffrer le fichier</button>
+        <button id="submit" class="primary" type="submit">Encrypt file</button>
       </div>
 
       <p id="message" class="notice error" role="alert" hidden></p>
@@ -87,19 +87,19 @@
     <section id="progress-panel" aria-live="polite" hidden>
       <p id="progress-label"></p>
       <progress id="progress"></progress>
-      <button id="cancel" class="secondary" type="button">Annuler</button>
+      <button id="cancel" class="secondary" type="button">Cancel</button>
     </section>
 
     <section id="result-panel" hidden>
       <p id="result-title" class="result-title"></p>
       <p id="result-note" class="hint"></p>
-      <a id="download" class="primary" href="#">Télécharger</a>
-      <button id="reset" class="secondary" type="button">Effacer et recommencer</button>
+      <a id="download" class="primary" href="#">Download</a>
+      <button id="reset" class="secondary" type="button">Clear and start over</button>
     </section>
 
     <footer>
-      <p>XChaCha20-Poly1305 · Argon2id · clés de 256 bits · <a href="https://libsodium.org" rel="noreferrer noopener" target="_blank">libsodium</a></p>
-      <p>Sans le mot de passe ou la clé, un fichier chiffré est irrécupérable.</p>
+      <p>XChaCha20-Poly1305 · Argon2id · 256-bit keys · <a href="https://libsodium.org" rel="noreferrer noopener" target="_blank">libsodium</a></p>
+      <p>Without the password or key, an encrypted file cannot be recovered.</p>
     </footer>
   </main>
 </body>

@@ -1,7 +1,7 @@
 # Cypher
 
 File encryption that runs entirely in the browser, in the spirit of [hat.sh](https://hat.sh).
-No application server and no build step: seven static files, about 1.3 MB. The interface is in French.
+No application server and no build step: seven static files, about 1.3 MB.
 
 ```
 public/
@@ -72,7 +72,7 @@ Useful properties:
 - **The browser and machine are assumed to be clean.** An extension or malware can read the password or the file.
 - **Memory wiping is not guaranteed.** Keys are zeroed in WebAssembly, but JavaScript strings (the password, a
   pasted key) cannot be.
-- **"Effacer" (Clear) is not secure deletion.** The temporary OPFS file is removed, without physically overwriting
+- **"Clear" is not secure deletion.** The temporary OPFS file is removed, without physically overwriting
   the disk. If the tab is closed first, the file is removed on the next visit.
 - **Name and size are not hidden.** The original name stays visible in `name.ext.cypher`, and the size of the
   encrypted file reveals the size of the plaintext.
